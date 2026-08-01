@@ -3,6 +3,7 @@ import { Component as HeroSection } from "@/components/ui/hero-section";
 import LiveMetricsChart from "@/components/LiveMetricsChart";
 import StatsStrip from "@/components/StatsStrip";
 import HowItWorks from "@/components/HowItWorks";
+import MCPSection from "@/components/MCPSection";
 import WhatYoureLookingAt from "@/components/WhatYoureLookingAt";
 //import Features from "@/components/Features";
 // import DashboardPreview from "@/components/DashboardPreview";
@@ -17,6 +18,7 @@ export default function Home() {
         <HeroSection />
         <LiveMetricsChart />
         <HowItWorks />
+        <MCPSection />
         <WhatYoureLookingAt />
         <StatsStrip />
         {/* <Features /> */}

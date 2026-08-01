@@ -8,31 +8,16 @@ import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon";
 import { createPortal } from "react-dom";
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import type { Icon } from "@tabler/icons-react";
-import {
-  IconRadar,
-  IconDna2,
-  IconRobot,
-  IconChartBar,
-  IconShieldSearch,
-  IconDeviceDesktopBolt,
-  IconUsers,
-  IconFileText,
-  IconShield,
-} from "@tabler/icons-react";
 
-type LinkItem = {
-  title: string;
-  href: string;
-  icon: Icon;
-  description?: string;
-};
+const navLinks = [
+  { label: "Logs", href: "#live-checkpoint-metrics" },
+  { label: "How it Works", href: "#how-it-works" },
+  { label: "MCP", href: "#mcp" },
+  { label: "Docs", href: "#docs" },
+];
 
 export function Header() {
   const [open, setOpen] = React.useState(false);
@@ -73,78 +58,17 @@ export function Header() {
           </a>
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="rounded-full bg-transparent text-cool-white/[0.82] shadow-none transition-all hover:bg-white/[0.14] hover:text-cool-white data-[state=open]:bg-white/[0.16] data-[state=open]:text-cool-white">
-                  Product
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="glass-panel animate-glass-drop rounded-2xl border-0 p-1 pr-1.5">
-                  <ul className="grid w-lg grid-cols-2 gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-2">
-                    {productLinks.map((item, i) => (
-                      <li key={i}>
-                        <ListItem {...item} />
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="p-2">
-                    <p className="text-sm text-cool-white/60">
-                      Interested?{" "}
-                      <a
-                        href="#cta"
-                        className="font-medium text-ocean-blue hover:underline"
-                      >
-                        Request a demo
-                      </a>
-                    </p>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="rounded-full bg-transparent text-cool-white/[0.82] shadow-none transition-all hover:bg-white/[0.14] hover:text-cool-white data-[state=open]:bg-white/[0.16] data-[state=open]:text-cool-white">
-                  Company
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="glass-panel animate-glass-drop rounded-2xl border-0 p-1 pr-1.5 pb-1.5">
-                  <div className="grid w-lg grid-cols-2 gap-2">
-                    <ul className="space-y-2 rounded-xl border border-white/10 bg-white/[0.03] p-2">
-                      {companyLinks.map((item, i) => (
-                        <li key={i}>
-                          <ListItem {...item} />
-                        </li>
-                      ))}
-                    </ul>
-                    <ul className="space-y-2 p-3">
-                      {companyLinks2.map((item, i) => (
-                        <li key={i}>
-                          <NavigationMenuLink
-                            href={item.href}
-                            className="flex flex-row items-center gap-x-2 rounded-md p-2 hover:bg-white/10"
-                          >
-                            <item.icon className="size-4 text-cool-white" />
-                            <span className="font-medium text-cool-white">
-                              {item.title}
-                            </span>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuLink className="px-2" asChild>
-                <a
-                  href="#how-it-works"
-                  className="rounded-full px-4 py-2 text-sm font-medium text-cool-white/[0.82] transition-colors hover:bg-white/[0.14] hover:text-cool-white"
-                >
-                  How it Works
-                </a>
-              </NavigationMenuLink>
-              <NavigationMenuLink className="px-2" asChild>
-                <a
-                  href="#features"
-                  className="rounded-full px-4 py-2 text-sm font-medium text-cool-white/[0.82] transition-colors hover:bg-white/[0.14] hover:text-cool-white"
-                >
-                  Features
-                </a>
-              </NavigationMenuLink>
+              {/* Product, Company, and Features nav items intentionally hidden. */}
+              {navLinks.map((link) => (
+                <NavigationMenuLink key={link.href} className="px-1" asChild>
+                  <a
+                    href={link.href}
+                    className="rounded-full px-4 py-2 text-sm font-medium text-cool-white/[0.82] transition-colors hover:bg-white/[0.14] hover:text-cool-white"
+                  >
+                    {link.label}
+                  </a>
+                </NavigationMenuLink>
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
@@ -180,16 +104,16 @@ export function Header() {
         className="flex flex-col justify-between gap-2 overflow-y-auto"
       >
         <div className="flex w-full flex-col gap-y-2">
-          <span className="px-1 text-sm text-cool-white/50">Product</span>
-          {productLinks.map((link) => (
-            <ListItem key={link.title} {...link} />
-          ))}
-          <span className="px-1 text-sm text-cool-white/50">Company</span>
-          {companyLinks.map((link) => (
-            <ListItem key={link.title} {...link} />
-          ))}
-          {companyLinks2.map((link) => (
-            <ListItem key={link.title} {...link} />
+          {/* Product, Company, and Features mobile nav items intentionally hidden. */}
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              className="rounded-2xl px-4 py-3 text-sm font-medium text-cool-white transition-colors hover:bg-white/10"
+            >
+              {link.label}
+            </a>
           ))}
         </div>
         <div className="flex flex-col gap-2">
@@ -240,97 +164,6 @@ function MobileMenu({
     document.body
   );
 }
-
-function ListItem({
-  title,
-  description,
-  icon: Icon,
-  className,
-  href,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuLink> & LinkItem) {
-  return (
-    <NavigationMenuLink
-      className={cn(
-        "flex w-full flex-row gap-x-2 rounded-xl p-2 transition-colors hover:bg-white/10 focus:bg-white/10",
-        className
-      )}
-      {...props}
-      asChild
-    >
-      <a href={href}>
-        <div className="flex size-12 aspect-square items-center justify-center rounded-lg border border-white/10 bg-white/5 shadow-sm">
-          <Icon className="size-5 text-ocean-blue" />
-        </div>
-        <div className="flex flex-col items-start justify-center">
-          <span className="font-medium text-cool-white">{title}</span>
-          <span className="text-xs text-cool-white/50">{description}</span>
-        </div>
-      </a>
-    </NavigationMenuLink>
-  );
-}
-
-const productLinks: LinkItem[] = [
-  {
-    title: "Identity Verification",
-    href: "#features",
-    description: "Short-lived JWTs, one per service, signed with its own key",
-    icon: IconRadar,
-  },
-  {
-    title: "RBAC Policy Engine",
-    href: "#features",
-    description: "Static allow-list decides who can call whom",
-    icon: IconDna2,
-  },
-  {
-    title: "Context-Aware Checks",
-    href: "#features",
-    description: "Time window, region, and payload size evaluated live",
-    icon: IconRobot,
-  },
-  {
-    title: "Lateral Movement Detection",
-    href: "#features",
-    description: "Flags novel targets and rapid fan-out patterns",
-    icon: IconChartBar,
-  },
-  {
-    title: "Rate Limiting",
-    href: "#features",
-    description: "Per-service request caps, even for trusted callers",
-    icon: IconShieldSearch,
-  },
-  {
-    title: "Latency Monitoring",
-    href: "#product",
-    description: "Checkpoint overhead measured on every request",
-    icon: IconDeviceDesktopBolt,
-  },
-];
-
-const companyLinks: LinkItem[] = [
-  {
-    title: "How it Works",
-    href: "#how-it-works",
-    description: "Verify, authorize, and route every service call",
-    icon: IconUsers,
-  },
-];
-
-const companyLinks2: LinkItem[] = [
-  {
-    title: "Terms of Service",
-    href: "#",
-    icon: IconFileText,
-  },
-  {
-    title: "Privacy Policy",
-    href: "#",
-    icon: IconShield,
-  },
-];
 
 function useScroll(threshold: number) {
   const [scrolled, setScrolled] = React.useState(
