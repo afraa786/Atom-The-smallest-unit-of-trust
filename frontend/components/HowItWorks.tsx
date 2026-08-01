@@ -1,19 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
-  CheckCircle2,
   ChevronDown,
-  CircleDashed,
   Database,
   KeyRound,
   Loader2,
   Network,
   Play,
   Send,
-  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -25,6 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { MultiStepLoader, type LoaderStep } from "@/components/ui/multi-step-loader";
+import { GradientWaveText } from "@/components/ui/gradient-wave-text";
 
 const PROXY_URL = process.env.NEXT_PUBLIC_PROXY_URL || "http://localhost:4000";
 
@@ -728,10 +727,6 @@ function CheckpointBreakdown({
   const { decision, reason, securityAlert, latencyMs, caller } = logEntry;
   const overallOk = decision === "allowed";
 
-  // The proxy's checkpoint chain short-circuits: identity -> RBAC ->
-  // context -> rate-limit, in that order, and stops at whichever one
-  // blocks. A checkpoint after the blocking one never actually ran, so
-  // it's shown as "not reached" rather than a false green pass.
   const order = [
     "blocked_identity",
     "blocked_rbac",
@@ -741,115 +736,103 @@ function CheckpointBreakdown({
   const blockedAtIndex = order.indexOf(decision as (typeof order)[number]);
   const reachedIndex = blockedAtIndex === -1 ? order.length : blockedAtIndex;
 
-  const status = (index: number): "pass" | "fail" | "skip" =>
+  const stepStatus = (index: number): "pass" | "fail" | "skip" =>
     index < reachedIndex ? "pass" : index === reachedIndex ? "fail" : "skip";
+
+  const steps: LoaderStep[] = [
+    {
+      label:
+        stepStatus(0) === "fail"
+          ? "Identity verification failed"
+          : `Identity verified as ${caller}`,
+      status: stepStatus(0),
+      reason: stepStatus(0) === "fail" ? reason : undefined,
+    },
+    {
+      label:
+        stepStatus(1) === "fail"
+          ? "RBAC check: denied"
+          : stepStatus(1) === "skip"
+            ? "RBAC check: not reached"
+            : "RBAC check: allowed",
+      status: stepStatus(1),
+      reason: stepStatus(1) === "fail" ? reason : undefined,
+    },
+    {
+      label:
+        stepStatus(2) === "fail"
+          ? "Context checks: re-authentication required"
+          : stepStatus(2) === "skip"
+            ? "Context checks: not reached"
+            : "Context checks: time / geo / payload — all passed",
+      status: stepStatus(2),
+      reason: stepStatus(2) === "fail" ? reason : undefined,
+    },
+    {
+      label:
+        stepStatus(3) === "fail"
+          ? "Rate limit exceeded"
+          : stepStatus(3) === "skip"
+            ? "Rate limit check: not reached"
+            : "Rate limit check: within limit",
+      status: stepStatus(3),
+      reason: stepStatus(3) === "fail" ? reason : undefined,
+    },
+  ];
+
+  // Total steps that will actually animate (pass + one fail if any)
+  const animatedCount = reachedIndex === order.length ? order.length : reachedIndex + 1;
+  // Show verdict after all animated steps have been revealed
+  const verdictDelay = animatedCount * 520 + 180; // ms
+  const [showVerdict, setShowVerdict] = React.useState(false);
+
+  React.useEffect(() => {
+    setShowVerdict(false);
+    const id = window.setTimeout(() => setShowVerdict(true), verdictDelay);
+    return () => window.clearTimeout(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logEntry.timestamp]);
 
   return (
     <div className="rounded-3xl border border-white/10 bg-white/[0.035] p-5">
-      <div className="grid gap-2.5">
-        <CheckLine
-          status={status(0)}
-          label={
-            status(0) === "fail"
-              ? "Identity verification failed"
-              : `Identity verified as ${caller}`
-          }
-          reason={status(0) === "fail" ? reason : undefined}
-        />
-        <CheckLine
-          status={status(1)}
-          label={
-            status(1) === "fail"
-              ? "RBAC check: denied"
-              : status(1) === "skip"
-                ? "RBAC check: not reached"
-                : "RBAC check: allowed"
-          }
-          reason={status(1) === "fail" ? reason : undefined}
-        />
-        <CheckLine
-          status={status(2)}
-          label={
-            status(2) === "fail"
-              ? "Context checks: re-authentication required"
-              : status(2) === "skip"
-                ? "Context checks: not reached"
-                : "Context checks: time / geo / payload — all passed"
-          }
-          reason={status(2) === "fail" ? reason : undefined}
-        />
-        <CheckLine
-          status={status(3)}
-          label={
-            status(3) === "fail"
-              ? "Rate limit exceeded"
-              : status(3) === "skip"
-                ? "Rate limit check: not reached"
-                : "Rate limit check: within limit"
-          }
-          reason={status(3) === "fail" ? reason : undefined}
-        />
-        {securityAlert && (
-          <div className="mt-1 flex items-start gap-2.5 text-sm text-yellow-300">
-            <span className="mt-0.5">⚠</span>
-            <span>
-              Lateral-movement signal fired:{" "}
-              <span className="font-semibold">{securityAlert}</span>
-            </span>
-          </div>
-        )}
-      </div>
+      <MultiStepLoader steps={steps} stepDelay={520} />
 
-      <div className="mt-5 border-t border-white/10 pt-4">
-        <p
-          className={cn(
-            "text-sm font-semibold",
-            overallOk ? "text-lime-green" : "text-red-400"
-          )}
-        >
-          Final result: HTTP {requestResult.status} in {latencyMs.toFixed(2)}ms
-          {" — "}
-          {decision.replace(/_/g, " ")}
-        </p>
-      </div>
-    </div>
-  );
-}
+      {securityAlert && (
+        <div className="mt-3 flex items-start gap-2.5 text-sm text-yellow-300">
+          <span className="mt-0.5">⚠</span>
+          <span>
+            Lateral-movement signal fired:{" "}
+            <span className="font-semibold">{securityAlert}</span>
+          </span>
+        </div>
+      )}
 
-function CheckLine({
-  status,
-  label,
-  reason,
-}: {
-  status: "pass" | "fail" | "skip";
-  label: string;
-  reason?: string | null;
-}) {
-  return (
-    <div className="flex items-start gap-2.5 text-sm">
-      {status === "pass" && (
-        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-lime-green" />
-      )}
-      {status === "fail" && (
-        <XCircle className="mt-0.5 size-4 shrink-0 text-red-400" />
-      )}
-      {status === "skip" && (
-        <CircleDashed className="mt-0.5 size-4 shrink-0 text-cool-white/30" />
-      )}
-      <div>
-        <span
-          className={cn(
-            status === "pass" && "text-cool-white",
-            status === "fail" && "text-red-300",
-            status === "skip" && "text-cool-white/40"
-          )}
-        >
-          {label}
-        </span>
-        {status === "fail" && reason && (
-          <p className="mt-0.5 text-xs text-red-400/80">{reason}</p>
+      <AnimatePresence>
+        {showVerdict && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-5 border-t border-white/10 pt-5 flex flex-col items-center gap-1"
+          >
+            {overallOk ? (
+              <GradientWaveText className="text-4xl font-black tracking-tight">
+                Accepted
+              </GradientWaveText>
+            ) : (
+              <span className="text-4xl font-black tracking-tight text-red-400">
+                Declined
+              </span>
+            )}
+            <p className={cn(
+              "text-xs font-medium mt-1",
+              overallOk ? "text-cool-white/50" : "text-red-400/60"
+            )}>
+              HTTP {requestResult.status} · {latencyMs.toFixed(2)}ms · {decision.replace(/_/g, " ")}
+            </p>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   );
 }

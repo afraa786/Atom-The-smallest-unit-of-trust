@@ -115,7 +115,7 @@ export default function MCPBeamDiagram() {
         gradientStartColor="#6EADBC"
         gradientStopColor="#1B5E20"
         dotted
-        duration={1.5}
+        duration={2.5}
       />
       <AnimatedBeam
         containerRef={containerRef}
@@ -128,7 +128,7 @@ export default function MCPBeamDiagram() {
         gradientStartColor="#D97757"
         gradientStopColor="#CC9B7A"
         dotted
-        duration={1.5}
+        duration={2.5}
       />
     </div>
   );
