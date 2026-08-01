@@ -1,0 +1,15 @@
+{
+  "name": "zero-trust-proxy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zero-Trust Access Control service mesh proxy enforcing cryptographic identity on microservice-to-microservice requests",
+  "main": "proxy/index.js",
+  "scripts": {
+    "start": "node proxy/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.4.5"
+  }
+}
