@@ -8,7 +8,9 @@
 // request (that's context-middleware's job) — it just reports the
 // specific reason so the caller can be told exactly what to fix.
 
-const ALLOWED_REGIONS = ["US", "EU"];
+const { loadMeshConfig } = require("../config/load-mesh-config");
+
+const ALLOWED_REGIONS = loadMeshConfig().allowedRegions;
 const MAX_PAYLOAD_BYTES = Number(process.env.MAX_PAYLOAD_BYTES) || 10 * 1024; // 10KB default
 
 function checkTimeWindow(now = new Date()) {

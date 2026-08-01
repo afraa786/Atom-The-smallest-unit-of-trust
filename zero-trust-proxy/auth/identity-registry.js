@@ -1,17 +1,13 @@
 // In-memory registry mapping service name -> its cryptographic secret.
 // Secrets are never hardcoded here — they're read from environment
-// variables at load time. Used by the proxy (and later, JWT
-// issuing/verification in Step 4) to look up which secret belongs to
-// which service identity.
+// variables at load time, per the "secretEnv" pointer in mesh.config.json.
+// Used by the proxy (and JWT issuing/verification) to look up which
+// secret belongs to which service identity.
 
 require("dotenv").config();
+const { loadMeshConfig } = require("../config/load-mesh-config");
 
-const REGISTRY = {
-  "user-service": process.env.USER_SERVICE_SECRET,
-  "payment-service": process.env.PAYMENT_SERVICE_SECRET,
-  "db-service": process.env.DB_SERVICE_SECRET,
-  "notification-service": process.env.NOTIFICATION_SERVICE_SECRET,
-};
+const REGISTRY = loadMeshConfig().secrets;
 
 function getSecret(serviceName) {
   const secret = REGISTRY[serviceName];

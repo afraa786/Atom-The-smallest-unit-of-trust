@@ -9,9 +9,11 @@ ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
 COPY package*.json ./
 COPY auth ./auth
+COPY config ./config
 COPY logs ./logs
 COPY policy ./policy
 COPY proxy ./proxy
+COPY mesh.config.json ./mesh.config.json
 
 RUN addgroup -S proxy && adduser -S proxy -G proxy
 USER proxy

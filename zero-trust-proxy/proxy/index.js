@@ -10,6 +10,7 @@ const { lateralMovementMiddleware, getAlerts } = require("./lateral-movement-mid
 const { addEntry, getEntries, getLatencyMetrics } = require("../logs/request-log");
 const { elapsedMs } = require("../logs/timing.js");
 const { RBAC_MAP } = require("../policy/rbac-map");
+const { loadMeshConfig } = require("../config/load-mesh-config");
 
 const app = express();
 app.use(express.json());
@@ -30,14 +31,11 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 4000;
 const SERVICE_NAME = "zero-trust-proxy";
 
-// Where the proxy forwards verified requests to. Uses docker-compose service
-// DNS names when running in a container network, falls back to localhost.
-const SERVICE_HOSTS = {
-  "user-service": process.env.USER_SERVICE_URL || "http://localhost:5001",
-  "payment-service": process.env.PAYMENT_SERVICE_URL || "http://localhost:5002",
-  "db-service": process.env.DB_SERVICE_URL || "http://localhost:5003",
-  "notification-service": process.env.NOTIFICATION_SERVICE_URL || "http://localhost:5004",
-};
+// Where the proxy forwards verified requests to, loaded from
+// mesh.config.json. Each service's "urlEnv" (e.g. USER_SERVICE_URL) lets
+// docker-compose or k8s override the default URL with a DNS name when
+// running in a container network; falls back to the config's "url".
+const SERVICE_HOSTS = loadMeshConfig().hosts;
 
 app.get("/health", (req, res) => res.json({ status: "ok", service: SERVICE_NAME }));
 
