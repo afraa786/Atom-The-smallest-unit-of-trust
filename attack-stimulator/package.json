@@ -1,0 +1,10 @@
+{
+  "name": "attack-stimulator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standalone attack simulation script that exercises the zero-trust-proxy mesh over HTTP",
+  "main": "simulate-attack.js",
+  "scripts": {
+    "start": "node simulate-attack.js"
+  }
+}

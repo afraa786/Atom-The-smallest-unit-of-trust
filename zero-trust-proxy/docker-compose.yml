@@ -10,10 +10,15 @@ services:
       - .env
     environment:
       - PORT=4000
+      - USER_SERVICE_URL=http://user-service:5001
+      - PAYMENT_SERVICE_URL=http://payment-service:5002
+      - DB_SERVICE_URL=http://db-service:5003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:5004
     depends_on:
       - user-service
       - payment-service
       - db-service
+      - notification-service
     networks:
       - mesh
 
@@ -31,6 +36,7 @@ services:
       - USER_SERVICE_URL=http://user-service:5001
       - PAYMENT_SERVICE_URL=http://payment-service:5002
       - DB_SERVICE_URL=http://db-service:5003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:5004
       - PROXY_URL=http://zero-trust-proxy:4000
     networks:
       - mesh
@@ -49,6 +55,7 @@ services:
       - USER_SERVICE_URL=http://user-service:5001
       - PAYMENT_SERVICE_URL=http://payment-service:5002
       - DB_SERVICE_URL=http://db-service:5003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:5004
       - PROXY_URL=http://zero-trust-proxy:4000
     networks:
       - mesh
@@ -67,6 +74,26 @@ services:
       - USER_SERVICE_URL=http://user-service:5001
       - PAYMENT_SERVICE_URL=http://payment-service:5002
       - DB_SERVICE_URL=http://db-service:5003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:5004
+      - PROXY_URL=http://zero-trust-proxy:4000
+    networks:
+      - mesh
+
+  notification-service:
+    build: ./services/notification-service
+    container_name: notification-service
+    ports:
+      - "5004:5004"
+    env_file:
+      - .env
+    environment:
+      - PORT=5004
+      - SERVICE_NAME=notification-service
+      - SERVICE_SECRET=${NOTIFICATION_SERVICE_SECRET}
+      - USER_SERVICE_URL=http://user-service:5001
+      - PAYMENT_SERVICE_URL=http://payment-service:5002
+      - DB_SERVICE_URL=http://db-service:5003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:5004
       - PROXY_URL=http://zero-trust-proxy:4000
     networks:
       - mesh

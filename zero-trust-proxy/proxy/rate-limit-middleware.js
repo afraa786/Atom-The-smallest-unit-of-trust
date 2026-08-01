@@ -4,15 +4,25 @@
 // question who the caller is or whether they're allowed to be here.
 
 const { checkRateLimit } = require("../policy/rate-limiter");
+const { addEntry } = require("../logs/request-log");
+const { now, elapsedMs } = require("../logs/timing.js");
 
 const PROXY_NAME = "zero-trust-proxy";
 
 function rateLimitMiddleware(req, res, next) {
   const caller = req.callerIdentity && req.callerIdentity.service;
+  const target = req.params.targetService;
 
   if (!caller) {
     // Should never happen if verifyMiddleware ran first, but fail closed.
     console.warn(`[${PROXY_NAME}] rate limit check skipped: no verified caller identity on request`);
+    addEntry({
+      caller: "unknown",
+      target,
+      decision: "blocked_identity",
+      reason: "no verified caller identity",
+      latencyMs: elapsedMs(req._startTime || now()),
+    });
     return res.status(401).json({ error: "no verified caller identity" });
   }
 
@@ -27,6 +37,14 @@ function rateLimitMiddleware(req, res, next) {
     console.warn(
       `[${PROXY_NAME}] rate limit exceeded for '${caller}', retry after ${result.retryAfterMs}ms`
     );
+    addEntry({
+      caller,
+      target,
+      decision: "blocked_rate_limit",
+      reason: `rate limit exceeded (${result.count}/${result.max} in window)`,
+      securityAlert: req.logEntry ? req.logEntry.securityAlert : null,
+      latencyMs: elapsedMs(req._startTime || now()),
+    });
     return res.status(429).json({
       error: "rate limit exceeded",
       retryAfterMs: result.retryAfterMs,

@@ -13,13 +13,21 @@
 //                   only ever talked to one target suddenly reaching for
 //                   a new one is worth flagging, even if RBAC permits it.
 //
-//   rapid_fanout  — the caller has hit 3+ DISTINCT targets within a short
+//   rapid_fanout  — the caller has hit N+ DISTINCT targets within a short
 //                   window (default 5s). This is the classic lateral-
 //                   movement probe pattern: an attacker with a stolen
 //                   token rapidly testing what else it can reach.
-
+//
+// FANOUT_THRESHOLD is 2, not 3, specifically because of this demo mesh's
+// size: with 4 services and the current RBAC map, no single caller is
+// ever permitted to legitimately reach more than 2 distinct targets
+// (payment-service -> {db-service, notification-service} is the widest
+// fan-out RBAC allows). A threshold of 3 would make rapid_fanout
+// permanently unreachable through real, RBAC-permitted traffic — it
+// would only ever be provable with test-only overrides. Tune this back
+// up if the mesh grows and a caller legitimately gets 3+ allowed targets.
 const FANOUT_WINDOW_MS = Number(process.env.LATERAL_FANOUT_WINDOW_MS) || 5000;
-const FANOUT_THRESHOLD = Number(process.env.LATERAL_FANOUT_THRESHOLD) || 3;
+const FANOUT_THRESHOLD = Number(process.env.LATERAL_FANOUT_THRESHOLD) || 2;
 const HISTORY_RETENTION_MS = Number(process.env.LATERAL_HISTORY_RETENTION_MS) || 15 * 60 * 1000; // 15 min
 
 // serviceName -> array of { target, at } call records, newest last.

@@ -7,6 +7,8 @@ const { rbacMiddleware } = require("./rbac-middleware");
 const { contextMiddleware } = require("./context-middleware");
 const { rateLimitMiddleware } = require("./rate-limit-middleware");
 const { lateralMovementMiddleware, getAlerts } = require("./lateral-movement-middleware");
+const { addEntry, getEntries, getLatencyMetrics } = require("../logs/request-log");
+const { elapsedMs } = require("../logs/timing.js");
 
 const app = express();
 app.use(express.json());
@@ -20,12 +22,23 @@ const SERVICE_HOSTS = {
   "user-service": process.env.USER_SERVICE_URL || "http://localhost:5001",
   "payment-service": process.env.PAYMENT_SERVICE_URL || "http://localhost:5002",
   "db-service": process.env.DB_SERVICE_URL || "http://localhost:5003",
+  "notification-service": process.env.NOTIFICATION_SERVICE_URL || "http://localhost:5004",
 };
 
 app.get("/health", (req, res) => res.json({ status: "ok", service: SERVICE_NAME }));
 
 app.get("/alerts", (req, res) => {
   res.json({ alerts: getAlerts() });
+});
+
+app.get("/logs", (req, res) => {
+  const { service, decision } = req.query;
+  const entries = getEntries({ service, decision }).slice(0, 100);
+  res.json({ logs: entries });
+});
+
+app.get("/metrics", (req, res) => {
+  res.json(getLatencyMetrics(100));
 });
 
 app.post("/auth/token", (req, res) => {
@@ -63,10 +76,32 @@ app.all(
   async (req, res) => {
     const { targetService } = req.params;
     const targetPath = "/" + req.params[0];
+    const caller = req.callerIdentity && req.callerIdentity.service;
+    const securityAlert = req.logEntry ? req.logEntry.securityAlert : null;
+
+    // Captured HERE — the instant all five checkpoints (identity, RBAC,
+    // lateral-movement, context, rate-limit) have passed. This is the
+    // proxy-only overhead measurement. Everything after this line is
+    // either a routing lookup or the downstream network call to the
+    // target service, neither of which counts as checkpoint overhead —
+    // so the captured number is reused below regardless of how long the
+    // subsequent fetch() takes, rather than recomputed after it returns.
+    const checkpointLatencyMs = elapsedMs(req._startTime);
 
     const baseUrl = SERVICE_HOSTS[targetService];
     if (!baseUrl) {
       console.warn(`[${SERVICE_NAME}] rejected: unknown target service '${targetService}'`);
+      // Passed every security checkpoint (identity/RBAC/context/rate-limit) —
+      // this is a routing error, not a security decision, so it's still
+      // logged as "allowed" with the reason explaining what went wrong.
+      addEntry({
+        caller,
+        target: targetService,
+        decision: "allowed",
+        reason: `allowed, but target service '${targetService}' is not registered (400) — not routed`,
+        securityAlert,
+        latencyMs: checkpointLatencyMs,
+      });
       return res.status(400).json({ error: `unknown target service '${targetService}'` });
     }
 
@@ -77,9 +112,25 @@ app.all(
       const response = await fetch(url, { method: req.method });
       const data = await response.json();
       console.log(`[${SERVICE_NAME}] response relayed from ${targetService} (status ${response.status})`);
+      addEntry({
+        caller,
+        target: targetService,
+        decision: "allowed",
+        reason: null,
+        securityAlert,
+        latencyMs: checkpointLatencyMs,
+      });
       res.status(response.status).json(data);
     } catch (err) {
       console.error(`[${SERVICE_NAME}] forwarding to ${targetService} failed: ${err.message}`);
+      addEntry({
+        caller,
+        target: targetService,
+        decision: "allowed",
+        reason: `allowed, but target unreachable (502): ${err.message}`,
+        securityAlert,
+        latencyMs: checkpointLatencyMs,
+      });
       res.status(502).json({ error: `failed to reach ${targetService}`, details: err.message });
     }
   }

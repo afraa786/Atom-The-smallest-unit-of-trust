@@ -41,6 +41,13 @@ function lateralMovementMiddleware(req, res, next) {
     );
 
     res.setHeader("X-Security-Alert", result.signal);
+
+    // This checkpoint never blocks — just annotates the unified request
+    // log entry (still in progress, written by whichever middleware or
+    // handler ultimately terminates this request) with the signal name.
+    if (req.logEntry) {
+      req.logEntry.securityAlert = result.signal;
+    }
   }
 
   next();

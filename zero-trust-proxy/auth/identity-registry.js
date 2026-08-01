@@ -10,6 +10,7 @@ const REGISTRY = {
   "user-service": process.env.USER_SERVICE_SECRET,
   "payment-service": process.env.PAYMENT_SERVICE_SECRET,
   "db-service": process.env.DB_SERVICE_SECRET,
+  "notification-service": process.env.NOTIFICATION_SERVICE_SECRET,
 };
 
 function getSecret(serviceName) {

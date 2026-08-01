@@ -8,8 +8,9 @@
 
 const RBAC_MAP = {
   "user-service": ["payment-service"],
-  "payment-service": ["db-service"],
+  "payment-service": ["db-service", "notification-service"],
   "db-service": [],
+  "notification-service": [],
 };
 
 function isAllowed(callerService, targetService) {

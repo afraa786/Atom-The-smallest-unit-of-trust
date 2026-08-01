@@ -5,6 +5,8 @@
 // requested target. A valid token is necessary but not sufficient.
 
 const { isAllowed } = require("../policy/rbac-map");
+const { addEntry } = require("../logs/request-log");
+const { now, elapsedMs } = require("../logs/timing.js");
 
 const PROXY_NAME = "zero-trust-proxy";
 
@@ -15,6 +17,13 @@ function rbacMiddleware(req, res, next) {
   if (!caller) {
     // Should never happen if verifyMiddleware ran first, but fail closed.
     console.warn(`[${PROXY_NAME}] RBAC check skipped: no verified caller identity on request`);
+    addEntry({
+      caller: "unknown",
+      target,
+      decision: "blocked_identity",
+      reason: "no verified caller identity",
+      latencyMs: elapsedMs(req._startTime || now()),
+    });
     return res.status(401).json({ error: "no verified caller identity" });
   }
 
@@ -25,6 +34,13 @@ function rbacMiddleware(req, res, next) {
   );
 
   if (!allowed) {
+    addEntry({
+      caller,
+      target,
+      decision: "blocked_rbac",
+      reason: `${caller} is not authorized to call ${target}`,
+      latencyMs: elapsedMs(req._startTime || now()),
+    });
     return res.status(403).json({
       error: `${caller} is not authorized to call ${target}`,
     });

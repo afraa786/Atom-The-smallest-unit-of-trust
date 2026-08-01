@@ -13,6 +13,8 @@
 // attempt counts.
 
 const { checkTimeWindow, checkGeo, checkPayloadSize } = require("../policy/context-policy");
+const { addEntry } = require("../logs/request-log");
+const { now, elapsedMs } = require("../logs/timing.js");
 
 const PROXY_NAME = "zero-trust-proxy";
 
@@ -37,6 +39,14 @@ function contextMiddleware(req, res, next) {
   if (failures.length > 0) {
     const reason = failures.map((f) => f.reason).join("; ");
     console.warn(`[${PROXY_NAME}] context check failed, requiring re-authentication: ${reason}`);
+    addEntry({
+      caller: req.callerIdentity && req.callerIdentity.service,
+      target: req.params.targetService,
+      decision: "reauth_required",
+      reason,
+      securityAlert: req.logEntry ? req.logEntry.securityAlert : null,
+      latencyMs: elapsedMs(req._startTime || now()),
+    });
     return res.status(428).json({ reauth_required: true, reason });
   }
 
