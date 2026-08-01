@@ -160,7 +160,7 @@ export function Component() {
       <div className="floating-element" style={{ top: "75%", left: "90%", animationDelay: "6.5s" }} />
 
       <div className="relative z-10 flex w-full items-center px-3 pb-2 pt-28 sm:px-0 md:pb-3 md:pt-32">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           {/* Left column: text content */}
           <div className="max-w-3xl text-left">
             <div className="relative">
@@ -210,19 +210,36 @@ export function Component() {
             >
               <a
                 href="#cta"
-                className="glow-lime rounded-full border border-transparent bg-ocean-blue px-8 py-3.5 text-sm font-bold text-cool-white transition-transform hover:-translate-y-0.5"
+                className="glass-specular rounded-full border border-white/25 bg-cool-white/85 px-8 py-3.5 text-sm font-bold text-charcoal shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_10px_28px_rgba(110,173,188,0.26)] transition-colors hover:bg-cool-white"
               >
                 Request Demo
               </a>
               <a
                 href="#how-it-works"
-                className="glow-lime rounded-full border border-cool-white/20 px-8 py-3.5 text-sm font-bold text-cool-white transition-transform hover:-translate-y-0.5"
+                className="glass-specular rounded-full border border-white/20 bg-white/[0.08] px-8 py-3.5 text-sm font-bold text-cool-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] transition-colors hover:bg-white/[0.14]"
               >
                 See How It Works
               </a>
             </div>
           </div>
 
+          <div
+            className="relative mx-auto w-full max-w-xl opacity-0 lg:max-w-none"
+            style={{ animation: "word-appear 1.2s ease-out forwards", animationDelay: "0.6s" }}
+          >
+            <div className="absolute -inset-8 rounded-full bg-ocean-blue/20 blur-3xl" />
+            <div className="glass-panel relative overflow-hidden rounded-[28px] p-2">
+              <video
+                src="/assets/hero_video.mp4"
+                className="aspect-video w-full rounded-[22px] object-cover"
+                autoPlay
+                controls
+                loop
+                playsInline
+                preload="metadata"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

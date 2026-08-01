@@ -26,13 +26,32 @@ export default function WhatYoureLookingAt() {
   return (
     <section id="docs" className="relative bg-black py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-3 sm:px-0">
+
+        {/* Section heading — styled like "How atom works" */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto mb-14 max-w-2xl text-center"
+        >
+          <h2 className="text-4xl font-bold tracking-tight text-cool-white sm:text-5xl">
+            System <span className="text-forest-green">docs</span>
+          </h2>
+          <p className="mt-4 text-cool-white/70">
+            Everything you need to understand, run, and verify Atom — from
+            architecture to live attack simulation results.
+          </p>
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
           className="relative mb-20 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.035] p-6 sm:mb-28 sm:p-10"
         >
+
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_35%,rgba(110,173,188,0.16),transparent_34%)]" />
           <div className="relative grid items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div>

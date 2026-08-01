@@ -413,10 +413,35 @@ export default function HowItWorks() {
 function StepNextButton({ onClick }: { onClick: () => void }) {
   return (
     <div className="mt-6 flex justify-end">
-      <Button type="button" variant="outline" className="gap-2" onClick={onClick}>
+      <button
+        type="button"
+        onClick={onClick}
+        className={cn(
+          "group relative inline-flex items-center gap-2 overflow-hidden rounded-full",
+          "border border-cool-white/20 bg-transparent px-6 py-2.5",
+          "text-sm font-bold text-cool-white",
+          "transition-all duration-300 hover:-translate-y-0.5",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-green focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+        )}
+      >
+        {/* Glare sweep on hover */}
+        <span
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-0 -translate-x-full",
+            "bg-gradient-to-r from-transparent via-white/20 to-transparent",
+            "transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "group-hover:translate-x-full"
+          )}
+        />
+        {/* Frosted glass highlight at top */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        />
         Next
-        <ArrowRight className="size-4" />
-      </Button>
+        <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+      </button>
     </div>
   );
 }
