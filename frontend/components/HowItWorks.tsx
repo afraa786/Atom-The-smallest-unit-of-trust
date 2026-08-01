@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import {
+  ArrowRight,
   CheckCircle2,
   ChevronDown,
   CircleDashed,
@@ -118,6 +119,7 @@ type RequestResult = {
 
 export default function HowItWorks() {
   const [openSteps, setOpenSteps] = React.useState<number[]>([1]);
+  const stepCardRefs = React.useRef<Record<number, HTMLDivElement | null>>({});
   const [sourceService, setSourceService] = React.useState(serviceOptions[0]);
   const [targetService, setTargetService] = React.useState(serviceOptions[1]);
 
@@ -140,6 +142,21 @@ export default function HowItWorks() {
         ? current.filter((id) => id !== stepId)
         : [...current, stepId]
     );
+  };
+
+  const handleNextStep = (currentStepId: number) => {
+    const nextStepId = currentStepId + 1;
+
+    setOpenSteps((current) =>
+      current.includes(nextStepId) ? current : [...current, nextStepId]
+    );
+
+    window.setTimeout(() => {
+      stepCardRefs.current[nextStepId]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 120);
   };
 
   // Changing either service invalidates everything downstream — a new
@@ -291,7 +308,10 @@ export default function HowItWorks() {
             return (
               <div
                 key={step.id}
-                className="overflow-hidden rounded-[28px] border border-white/[0.12] bg-white/[0.045] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl"
+                ref={(node) => {
+                  stepCardRefs.current[step.id] = node;
+                }}
+                className="scroll-mt-28 overflow-hidden rounded-[28px] border border-white/[0.12] bg-white/[0.045] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl"
               >
                 <button
                   type="button"
@@ -330,28 +350,34 @@ export default function HowItWorks() {
                   <div className="overflow-hidden">
                     <div className="border-t border-white/10 px-5 py-6 sm:px-6">
                       {step.id === 1 && (
-                        <RequestSimulator
-                          sourceService={sourceService}
-                          targetService={targetService}
-                          onSourceChange={(v) => {
-                            setSourceService(v);
-                            resetDownstream();
-                          }}
-                          onTargetChange={(v) => {
-                            setTargetService(v);
-                            resetDownstream();
-                          }}
-                        />
+                        <>
+                          <RequestSimulator
+                            sourceService={sourceService}
+                            targetService={targetService}
+                            onSourceChange={(v) => {
+                              setSourceService(v);
+                              resetDownstream();
+                            }}
+                            onTargetChange={(v) => {
+                              setTargetService(v);
+                              resetDownstream();
+                            }}
+                          />
+                          <StepNextButton onClick={() => handleNextStep(1)} />
+                        </>
                       )}
                       {step.id === 2 && (
-                        <TokenSelection
-                          sourceService={sourceService}
-                          token={token}
-                          decoded={decoded}
-                          loading={tokenLoading}
-                          error={tokenError}
-                          onGenerate={handleGenerateToken}
-                        />
+                        <>
+                          <TokenSelection
+                            sourceService={sourceService}
+                            token={token}
+                            decoded={decoded}
+                            loading={tokenLoading}
+                            error={tokenError}
+                            onGenerate={handleGenerateToken}
+                          />
+                          <StepNextButton onClick={() => handleNextStep(2)} />
+                        </>
                       )}
                       {step.id === 3 && (
                         <RequestSection
@@ -381,6 +407,17 @@ export default function HowItWorks() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function StepNextButton({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="mt-6 flex justify-end">
+      <Button type="button" variant="outline" className="gap-2" onClick={onClick}>
+        Next
+        <ArrowRight className="size-4" />
+      </Button>
+    </div>
   );
 }
 

@@ -108,7 +108,7 @@ export default function LiveMetricsChart() {
   const previous = samples[samples.length - 2];
 
   return (
-    <section className="relative bg-black pb-20 pt-16 sm:pt-20">
+    <section id="live-checkpoint-metrics" className="relative bg-black pb-20 pt-16 sm:pt-20">
       <div className="mx-auto max-w-7xl px-3 sm:px-0">
         <div className="mb-10 text-center">
           <h2 className="text-4xl font-bold tracking-tight text-cool-white sm:text-5xl">

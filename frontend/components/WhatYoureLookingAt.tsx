@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const SECTIONS = [
@@ -23,8 +24,43 @@ const SECTIONS = [
 
 export default function WhatYoureLookingAt() {
   return (
-    <section className="relative bg-black py-24 sm:py-32">
+    <section id="docs" className="relative bg-black py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-3 sm:px-0">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative mb-20 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.035] p-6 sm:mb-28 sm:p-10"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_35%,rgba(110,173,188,0.16),transparent_34%)]" />
+          <div className="relative grid items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-ocean-blue">
+                System Architecture
+              </p>
+              <h3 className="mt-3 text-3xl font-black uppercase tracking-tight text-cool-white sm:text-4xl">
+                Zero-trust request path
+              </h3>
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-cool-white/70">
+                The architecture diagram now lives with the documentation so it
+                can support the explanation below without competing with the
+                first-viewport hero.
+              </p>
+            </div>
+            <div className="relative mx-auto flex w-full max-w-xl items-center justify-center">
+              <div className="absolute h-80 w-80 rounded-full bg-ocean-blue/20 blur-3xl md:h-[30rem] md:w-[30rem]" />
+              <Image
+                src="/3d.png"
+                alt="Zero-trust system architecture diagram"
+                width={680}
+                height={680}
+                className="relative w-full max-w-md drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)] lg:max-w-lg"
+              />
+            </div>
+          </div>
+        </motion.div>
+
         <div className="flex flex-col gap-20 sm:gap-28">
           {SECTIONS.map((item, i) => (
             <motion.div

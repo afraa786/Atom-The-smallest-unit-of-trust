@@ -160,9 +160,9 @@ export function Component() {
       <div className="floating-element" style={{ top: "75%", left: "90%", animationDelay: "6.5s" }} />
 
       <div className="relative z-10 flex w-full items-center px-3 pb-2 pt-28 sm:px-0 md:pb-3 md:pt-32">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12">
           {/* Left column: text content */}
-          <div className="text-left">
+          <div className="max-w-3xl text-left">
             <div className="relative">
               <h1
                 className="text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl [&_.word]:mr-[0.08em]"
@@ -199,9 +199,8 @@ export function Component() {
                 animationDelay: "1.5s",
               }}
             >
-              The future of communication. Atom is a real-time Zero-Trust
-              platform that secures decentralized APIs with authentication,
-              policy enforcement, and continuous verification.
+              Atom is a real-time Zero-Trust
+              platform that secures decentralized APIs with authentication & continuous verification.
             </p>
 
             {/* CTAs */}
@@ -224,24 +223,6 @@ export function Component() {
             </div>
           </div>
 
-          {/* Right column: 3D asset */}
-          <div
-            className="relative mx-auto flex items-center justify-center opacity-0"
-            style={{ animation: "word-appear 1.2s ease-out forwards", animationDelay: "0.6s" }}
-          >
-            <div
-              className="absolute h-96 w-96 rounded-full blur-3xl md:h-[34rem] md:w-[34rem]"
-              style={{ background: "rgba(110,173,188,0.25)" }}
-            />
-            <Image
-              src="/3d.png"
-              alt="Zero-trust security shield, lock, and identity card"
-              width={680}
-              height={680}
-              priority
-              className="relative w-96 max-w-full drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)] md:w-[34rem]"
-            />
-          </div>
         </div>
       </div>
     </div>
