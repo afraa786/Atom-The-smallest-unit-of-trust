@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "atom — Autonomous AI Cybersecurity",
+  title: "atom - autonomous AI cybersecurity",
   description:
     "atom is an AI-driven cybersecurity platform that detects, analyzes, and responds to threats in real time using intelligent agents.",
 };
