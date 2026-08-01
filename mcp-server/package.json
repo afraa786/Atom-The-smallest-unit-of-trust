@@ -1,0 +1,23 @@
+{
+  "name": "zero-trust-proxy-mcp",
+  "version": "0.1.0",
+  "description": "MCP server exposing the Zero-Trust Proxy's live metrics, logs, and alerts as tools for MCP-compatible clients.",
+  "type": "module",
+  "main": "build/index.js",
+  "bin": {
+    "zero-trust-proxy-mcp": "build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2"
+  }
+}
