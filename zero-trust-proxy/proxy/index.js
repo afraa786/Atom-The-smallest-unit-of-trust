@@ -9,6 +9,7 @@ const { rateLimitMiddleware } = require("./rate-limit-middleware");
 const { lateralMovementMiddleware, getAlerts } = require("./lateral-movement-middleware");
 const { addEntry, getEntries, getLatencyMetrics } = require("../logs/request-log");
 const { elapsedMs } = require("../logs/timing.js");
+const { RBAC_MAP } = require("../policy/rbac-map");
 
 const app = express();
 app.use(express.json());
@@ -52,6 +53,10 @@ app.get("/logs", (req, res) => {
 
 app.get("/metrics", (req, res) => {
   res.json(getLatencyMetrics(100));
+});
+
+app.get("/policy/rbac", (req, res) => {
+  res.json(RBAC_MAP);
 });
 
 app.post("/auth/token", (req, res) => {
