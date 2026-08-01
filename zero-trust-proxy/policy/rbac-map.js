@@ -1,17 +1,15 @@
-// Static "who can call whom" policy. Each key is a caller service; its
-// value is the list of target services that caller is permitted to reach
-// through the proxy. Anything not listed is implicitly denied.
+// Static "who can call whom" policy, loaded from mesh.config.json's
+// "rbac" section. Each key is a caller service; its value is the list of
+// target services that caller is permitted to reach through the proxy.
+// Anything not listed is implicitly denied.
 //
-// No context-awareness (time/geo/payload) yet — that's Step 7. This is
-// purely a static allow-list, checked after identity has already been
-// cryptographically verified.
+// This is a static allow-list, checked after identity has already been
+// cryptographically verified — context-awareness (time/geo/payload) is a
+// separate, later checkpoint (policy/context-policy.js).
 
-const RBAC_MAP = {
-  "user-service": ["payment-service"],
-  "payment-service": ["db-service", "notification-service"],
-  "db-service": [],
-  "notification-service": [],
-};
+const { loadMeshConfig } = require("../config/load-mesh-config");
+
+const RBAC_MAP = loadMeshConfig().rbac;
 
 function isAllowed(callerService, targetService) {
   const allowedTargets = RBAC_MAP[callerService];

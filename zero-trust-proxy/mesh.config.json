@@ -1,0 +1,31 @@
+{
+  "services": {
+    "user-service": {
+      "secretEnv": "USER_SERVICE_SECRET",
+      "url": "http://localhost:5001",
+      "urlEnv": "USER_SERVICE_URL"
+    },
+    "payment-service": {
+      "secretEnv": "PAYMENT_SERVICE_SECRET",
+      "url": "http://localhost:5002",
+      "urlEnv": "PAYMENT_SERVICE_URL"
+    },
+    "db-service": {
+      "secretEnv": "DB_SERVICE_SECRET",
+      "url": "http://localhost:5003",
+      "urlEnv": "DB_SERVICE_URL"
+    },
+    "notification-service": {
+      "secretEnv": "NOTIFICATION_SERVICE_SECRET",
+      "url": "http://localhost:5004",
+      "urlEnv": "NOTIFICATION_SERVICE_URL"
+    }
+  },
+  "rbac": {
+    "user-service": ["payment-service"],
+    "payment-service": ["db-service", "notification-service"],
+    "db-service": [],
+    "notification-service": []
+  },
+  "allowedRegions": ["US", "EU"]
+}
