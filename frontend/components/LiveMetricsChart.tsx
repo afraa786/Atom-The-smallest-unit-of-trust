@@ -181,21 +181,10 @@ export default function LiveMetricsChart() {
           </div>
 
           {/* Chart */}
-          <div className="px-3 py-6 bg-black/60">
+          <div className="px-3 py-6">
             {samples.length < 2 ? (
               <div className="flex h-64 items-center justify-center text-sm text-cool-white/40">
-                {connected === false ? (
-                  <video
-                    src="/loading_video.mp4"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="h-64 w-full rounded-2xl object-cover opacity-90"
-                  />
-                ) : (
-                  "Collecting live samples..."
-                )}
+                Collecting live samples...
               </div>
             ) : (
               <ChartContainer config={chartConfig} className="h-72 w-full">
