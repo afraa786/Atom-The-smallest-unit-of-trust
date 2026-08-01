@@ -68,7 +68,7 @@ export function Header() {
               width={260}
               height={90}
               priority
-              className="h-9 w-auto"
+              className="h-full w-auto"
             />
           </a>
           <NavigationMenu className="hidden md:flex">
@@ -273,39 +273,39 @@ function ListItem({
 
 const productLinks: LinkItem[] = [
   {
-    title: "Real-time Detection",
+    title: "Identity Verification",
     href: "#features",
-    description: "Continuous monitoring across endpoints and cloud",
+    description: "Short-lived JWTs, one per service, signed with its own key",
     icon: IconRadar,
   },
   {
-    title: "AI Anomaly Engine",
+    title: "RBAC Policy Engine",
     href: "#features",
-    description: "Deep learning models flag deviations instantly",
+    description: "Static allow-list decides who can call whom",
     icon: IconDna2,
   },
   {
-    title: "Automated Response",
+    title: "Context-Aware Checks",
     href: "#features",
-    description: "Playbooks isolate and remediate without delay",
+    description: "Time window, region, and payload size evaluated live",
     icon: IconRobot,
   },
   {
-    title: "Behavioral Analysis",
+    title: "Lateral Movement Detection",
     href: "#features",
-    description: "Catch insider threats and compromised credentials",
+    description: "Flags novel targets and rapid fan-out patterns",
     icon: IconChartBar,
   },
   {
-    title: "Zero-Day Recognition",
+    title: "Rate Limiting",
     href: "#features",
-    description: "Pattern-matching for novel, unseen exploits",
+    description: "Per-service request caps, even for trusted callers",
     icon: IconShieldSearch,
   },
   {
-    title: "Unified Dashboard",
+    title: "Latency Monitoring",
     href: "#product",
-    description: "One live view across your entire stack",
+    description: "Checkpoint overhead measured on every request",
     icon: IconDeviceDesktopBolt,
   },
 ];
@@ -314,7 +314,7 @@ const companyLinks: LinkItem[] = [
   {
     title: "How it Works",
     href: "#how-it-works",
-    description: "Ingest, detect, analyze, auto-respond",
+    description: "Verify, authorize, and route every service call",
     icon: IconUsers,
   },
 ];

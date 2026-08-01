@@ -11,9 +11,17 @@ import {
   Send,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-const serviceOptions = ["user", "payment", "databases"];
+const serviceOptions = ["user-service", "payment-service", "db-service"];
 
 const steps = [
   {
@@ -185,23 +193,26 @@ type ServiceSelectProps = {
 };
 
 function ServiceSelect({ label, value, onChange }: ServiceSelectProps) {
+  const id = `service-select-${label.toLowerCase().replace(/\s+/g, "-")}`;
+
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-medium text-cool-white/70">
+    <div>
+      <Label htmlFor={id} className="mb-2">
         {label}
-      </span>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-12 w-full rounded-2xl border border-white/15 bg-black/45 px-4 text-sm font-medium text-cool-white outline-none transition-colors hover:border-white/25 focus:border-ocean-blue"
-      >
-        {serviceOptions.map((option) => (
-          <option key={option} value={option} className="bg-black text-cool-white">
-            {option}
-          </option>
-        ))}
-      </select>
-    </label>
+      </Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger id={id}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {serviceOptions.map((option) => (
+            <SelectItem key={option} value={option}>
+              {option}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
 

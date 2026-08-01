@@ -1,7 +1,7 @@
 // hero-section.tsx
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import heroBackground from "@/assets/hero_section_bg.jpg";
 
@@ -15,34 +15,11 @@ const colors = {
 };
 
 export function Component() {
-  const gradientRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    // Animate words
+    // Word hover effects — the reveal animation itself is set inline via
+    // style on each span (CSS-driven, fires reliably on mount), this only
+    // adds the interactive glow-on-hover behavior on top.
     const words = document.querySelectorAll<HTMLElement>(".word");
-    words.forEach((word) => {
-      const delay = parseInt(word.getAttribute("data-delay") || "0", 10);
-      setTimeout(() => {
-        word.style.animation = "word-appear 0.8s ease-out forwards";
-      }, delay);
-    });
-
-    // Mouse gradient
-    const gradient = gradientRef.current;
-    function onMouseMove(e: MouseEvent) {
-      if (gradient) {
-        gradient.style.left = e.clientX - 192 + "px";
-        gradient.style.top = e.clientY - 192 + "px";
-        gradient.style.opacity = "1";
-      }
-    }
-    function onMouseLeave() {
-      if (gradient) gradient.style.opacity = "0";
-    }
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseleave", onMouseLeave);
-
-    // Word hover effects
     words.forEach((word) => {
       word.addEventListener("mouseenter", () => {
         word.style.textShadow = "0 0 20px rgba(27, 94, 32, 0.8)";
@@ -87,8 +64,6 @@ export function Component() {
     window.addEventListener("scroll", onScroll);
 
     return () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("click", onClick);
       window.removeEventListener("scroll", onScroll);
     };
@@ -184,80 +159,91 @@ export function Component() {
       <div className="floating-element" style={{ top: "40%", left: "10%", animationDelay: "6s" }} />
       <div className="floating-element" style={{ top: "75%", left: "90%", animationDelay: "6.5s" }} />
 
-      <div className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center px-4 py-28 md:px-6 md:py-32">
-        {/* Main headline */}
-        <div className="relative mx-auto max-w-4xl text-center">
-          <h1
-            className="text-4xl font-extralight leading-tight tracking-tight md:text-6xl lg:text-7xl"
-            style={{ color: colors.coolWhite }}
-          >
-            <span className="word" data-delay="200">Stop</span>{" "}
-            <span className="word" data-delay="350">Attackers</span>{" "}
-            <span className="word" data-delay="500">at</span>{" "}
-            <span className="word" data-delay="650">the</span>{" "}
-            <span className="word" data-delay="800">First</span>{" "}
-            <span className="word" data-delay="950">Request.</span>
-          </h1>
-          <div
-            className="absolute -left-8 top-1/2 h-px w-4 opacity-20"
-            style={{
-              background: colors.oceanBlue,
-              animation: "word-appear 1s ease-out forwards",
-              animationDelay: "1.2s",
-            }}
-          />
-          <div
-            className="absolute -right-8 top-1/2 h-px w-4 opacity-20"
-            style={{
-              background: colors.oceanBlue,
-              animation: "word-appear 1s ease-out forwards",
-              animationDelay: "1.3s",
-            }}
-          />
-        </div>
+      <div className="relative z-10 flex min-h-screen w-full items-center px-4 pb-20 pt-4 md:px-6 md:pb-24 md:pt-6">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
+          {/* Left column: text content */}
+          <div className="text-left">
+            <div className="relative">
+              <h1
+                className="text-4xl font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl [&_.word]:mr-[0.08em]"
+                style={{ color: colors.coolWhite }}
+              >
+                {[
+                  ["Stop", 0],
+                  ["Attackers", 150],
+                  ["at", 300],
+                  ["the", 450],
+                  ["First", 600],
+                  ["Request.", 750],
+                ].map(([text, delayMs]) => (
+                  <span
+                    key={text}
+                    className="word"
+                    style={{
+                      animation: "word-appear 0.8s ease-out forwards",
+                      animationDelay: `${delayMs}ms`,
+                    }}
+                  >
+                    {text}
+                  </span>
+                ))}
+              </h1>
+            </div>
 
-        {/* Subhead */}
-        <p
-          className="mx-auto mt-6 max-w-2xl text-center text-base font-light leading-relaxed opacity-0 md:text-lg"
-          style={{
-            color: colors.coolWhiteDim,
-            animation: "word-appear 1s ease-out forwards",
-            animationDelay: "1.5s",
-          }}
-        >
-          The future of communication. Atom is a real-time Zero-Trust
-          platform that secures decentralized APIs with authentication,
-          policy enforcement, and continuous verification.
-        </p>
+            {/* Subhead */}
+            <p
+              className="mt-6 max-w-xl text-left text-base font-light leading-relaxed opacity-0 md:text-lg"
+              style={{
+                color: colors.coolWhiteDim,
+                animation: "word-appear 1s ease-out forwards",
+                animationDelay: "1.5s",
+              }}
+            >
+              The future of communication. Atom is a real-time Zero-Trust
+              platform that secures decentralized APIs with authentication,
+              policy enforcement, and continuous verification.
+            </p>
 
-        {/* CTAs */}
-        <div
-          className="mt-10 flex flex-wrap items-center justify-center gap-4 opacity-0"
-          style={{ animation: "word-appear 1s ease-out forwards", animationDelay: "1.9s" }}
-        >
-          <a
-            href="#cta"
-            className="glow-lime rounded-full border border-transparent bg-ocean-blue px-8 py-3.5 text-sm font-bold text-cool-white transition-transform hover:-translate-y-0.5"
+            {/* CTAs */}
+            <div
+              className="mt-10 flex flex-wrap items-center justify-start gap-4 opacity-0"
+              style={{ animation: "word-appear 1s ease-out forwards", animationDelay: "1.9s" }}
+            >
+              <a
+                href="#cta"
+                className="glow-lime rounded-full border border-transparent bg-ocean-blue px-8 py-3.5 text-sm font-bold text-cool-white transition-transform hover:-translate-y-0.5"
+              >
+                Request Demo
+              </a>
+              <a
+                href="#how-it-works"
+                className="glow-lime rounded-full border border-cool-white/20 px-8 py-3.5 text-sm font-bold text-cool-white transition-transform hover:-translate-y-0.5"
+              >
+                See How It Works
+              </a>
+            </div>
+          </div>
+
+          {/* Right column: 3D asset */}
+          <div
+            className="relative mx-auto flex items-center justify-center opacity-0"
+            style={{ animation: "word-appear 1.2s ease-out forwards", animationDelay: "0.6s" }}
           >
-            Request Demo
-          </a>
-          <a
-            href="#how-it-works"
-            className="glow-lime rounded-full border border-cool-white/20 px-8 py-3.5 text-sm font-bold text-cool-white transition-transform hover:-translate-y-0.5"
-          >
-            See How It Works
-          </a>
+            <div
+              className="absolute h-96 w-96 rounded-full blur-3xl md:h-[34rem] md:w-[34rem]"
+              style={{ background: "rgba(110,173,188,0.25)" }}
+            />
+            <Image
+              src="/3d-asset.png"
+              alt="Zero-trust security shield, lock, and identity card"
+              width={680}
+              height={680}
+              priority
+              className="relative w-96 max-w-full drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)] md:w-[34rem]"
+            />
+          </div>
         </div>
       </div>
-
-      <div
-        id="mouse-gradient"
-        ref={gradientRef}
-        className="pointer-events-none fixed h-96 w-96 rounded-full opacity-0 blur-3xl transition-all duration-500 ease-out"
-        style={{
-          background: `radial-gradient(circle, rgba(110,173,188,0.22) 0%, transparent 100%)`,
-        }}
-      />
     </div>
   );
 }

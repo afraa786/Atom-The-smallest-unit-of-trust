@@ -31,8 +31,8 @@ export default function CTAFooter() {
             precision.
           </h2>
           <p className="mt-5 text-lg text-cool-white/70">
-            Get early access to atom and put an AI-driven SOC copilot on
-            your team.
+            Get early access to atom and put a verified checkpoint in front
+            of every service-to-service request in your mesh.
           </p>
 
           {submitted ? (

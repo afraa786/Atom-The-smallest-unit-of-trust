@@ -13,8 +13,8 @@ export default function Home() {
       <Header />
       <main className="flex flex-1 flex-col">
         <HeroSection />
-        <StatsStrip />
         <HowItWorks />
+        <StatsStrip />
         {/* <Features /> */}
         {/* <DashboardPreview /> */}
         {/* <WhyAI /> */}
