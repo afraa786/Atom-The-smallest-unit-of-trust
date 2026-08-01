@@ -31,6 +31,7 @@ services:
       - USER_SERVICE_URL=http://user-service:5001
       - PAYMENT_SERVICE_URL=http://payment-service:5002
       - DB_SERVICE_URL=http://db-service:5003
+      - PROXY_URL=http://zero-trust-proxy:4000
     networks:
       - mesh
 
@@ -48,6 +49,7 @@ services:
       - USER_SERVICE_URL=http://user-service:5001
       - PAYMENT_SERVICE_URL=http://payment-service:5002
       - DB_SERVICE_URL=http://db-service:5003
+      - PROXY_URL=http://zero-trust-proxy:4000
     networks:
       - mesh
 
@@ -65,6 +67,7 @@ services:
       - USER_SERVICE_URL=http://user-service:5001
       - PAYMENT_SERVICE_URL=http://payment-service:5002
       - DB_SERVICE_URL=http://db-service:5003
+      - PROXY_URL=http://zero-trust-proxy:4000
     networks:
       - mesh
 

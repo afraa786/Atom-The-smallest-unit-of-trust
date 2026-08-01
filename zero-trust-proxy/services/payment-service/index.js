@@ -13,11 +13,26 @@ if (!SERVICE_SECRET) {
 }
 console.log(`[${SERVICE_NAME}] identity loaded: ${SERVICE_NAME}`);
 
-const SERVICE_HOSTS = {
-  "user-service": process.env.USER_SERVICE_URL || "http://localhost:5001",
-  "payment-service": process.env.PAYMENT_SERVICE_URL || "http://localhost:5002",
-  "db-service": process.env.DB_SERVICE_URL || "http://localhost:5003",
-};
+// All inter-service traffic now flows through the proxy's checkpoint —
+// this service no longer resolves or calls target services' hosts directly.
+const PROXY_URL = process.env.PROXY_URL || "http://localhost:4000";
+
+async function fetchOwnToken() {
+  console.log(`[${SERVICE_NAME}] requesting token from proxy for self ('${SERVICE_NAME}')`);
+  const response = await fetch(`${PROXY_URL}/auth/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ service: SERVICE_NAME }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`proxy refused to issue token (status ${response.status})`);
+  }
+
+  const { token } = await response.json();
+  console.log(`[${SERVICE_NAME}] received token from proxy`);
+  return token;
+}
 
 const FAKE_TRANSACTIONS = [
   { id: "txn_001", userId: 1, amount: 42.5, currency: "USD", status: "completed" },
@@ -39,16 +54,16 @@ app.post("/call-service", async (req, res) => {
     return res.status(400).json({ error: "request body must include 'target' and 'path'" });
   }
 
-  const baseUrl = SERVICE_HOSTS[target];
-  if (!baseUrl) {
-    return res.status(400).json({ error: `unknown target service '${target}'` });
-  }
-
-  const url = `${baseUrl}${path}`;
-  console.log(`[${SERVICE_NAME}] calling ${target} -> GET ${url}`);
+  // Routed through the proxy's checkpoint, not called directly.
+  const url = `${PROXY_URL}/route/${target}${path}`;
 
   try {
-    const response = await fetch(url);
+    const token = await fetchOwnToken();
+
+    console.log(`[${SERVICE_NAME}] calling ${target} via proxy -> GET ${url} (with Bearer token attached)`);
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await response.json();
     console.log(`[${SERVICE_NAME}] received response from ${target} (status ${response.status})`);
     res.status(response.status).json({ from: SERVICE_NAME, target, data });
