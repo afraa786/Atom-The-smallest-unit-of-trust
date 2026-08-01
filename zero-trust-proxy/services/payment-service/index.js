@@ -34,6 +34,59 @@ async function fetchOwnToken() {
   return token;
 }
 
+// Calls a target service through the proxy, attaching a Bearer token.
+// If the proxy responds 428 (context check failed, re-auth requested),
+// fetches a FRESH token and retries exactly once. If the retry also
+// comes back 428, that is treated as a hard failure (403) rather than
+// looping — the proxy itself has no memory of retries, so this one-shot
+// retry-then-give-up behavior lives here, in the calling service.
+async function callThroughProxy(url, { headers = {}, body } = {}) {
+  const method = body ? "POST" : "GET";
+  const fetchOpts = (token) => ({
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...headers,
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+
+  let token = await fetchOwnToken();
+
+  console.log(`[${SERVICE_NAME}] calling via proxy -> ${method} ${url} (with Bearer token attached)`);
+  let response = await fetch(url, fetchOpts(token));
+
+  if (response.status === 428) {
+    const respBody = await response.json();
+    console.warn(`[${SERVICE_NAME}] received 428 reauth_required: ${respBody.reason}`);
+    console.log(`[${SERVICE_NAME}] fetching fresh token and retrying once`);
+
+    token = await fetchOwnToken();
+    response = await fetch(url, fetchOpts(token));
+
+    if (response.status === 428) {
+      console.error(`[${SERVICE_NAME}] retry also failed context check — giving up, hard fail 403`);
+      const retryBody = await response.json();
+      return {
+        status: 403,
+        data: { error: `context check failed after re-auth retry: ${retryBody.reason}` },
+      };
+    }
+  }
+
+  if (response.status === 429) {
+    const rateBody = await response.json();
+    console.warn(
+      `[${SERVICE_NAME}] rate limited by proxy (429), retry after ${rateBody.retryAfterMs}ms — not retrying automatically`
+    );
+    return { status: 429, data: rateBody };
+  }
+
+  const data = await response.json();
+  return { status: response.status, data };
+}
+
 const FAKE_TRANSACTIONS = [
   { id: "txn_001", userId: 1, amount: 42.5, currency: "USD", status: "completed" },
   { id: "txn_002", userId: 2, amount: 15.0, currency: "USD", status: "pending" },
@@ -47,8 +100,16 @@ app.get("/data", (req, res) => {
   res.json({ service: SERVICE_NAME, records: FAKE_TRANSACTIONS });
 });
 
+// Also accepts POST — used when a caller needs to attach a request body
+// (e.g. to exercise the proxy's payload-size context check), even though
+// this endpoint itself ignores the body content.
+app.post("/data", (req, res) => {
+  console.log(`[${SERVICE_NAME}] received POST /data`);
+  res.json({ service: SERVICE_NAME, records: FAKE_TRANSACTIONS });
+});
+
 app.post("/call-service", async (req, res) => {
-  const { target, path } = req.body || {};
+  const { target, path, region, payload } = req.body || {};
 
   if (!target || !path) {
     return res.status(400).json({ error: "request body must include 'target' and 'path'" });
@@ -57,16 +118,15 @@ app.post("/call-service", async (req, res) => {
   // Routed through the proxy's checkpoint, not called directly.
   const url = `${PROXY_URL}/route/${target}${path}`;
 
-  try {
-    const token = await fetchOwnToken();
+  const extraHeaders = {};
+  if (region) extraHeaders["X-Simulated-Region"] = region;
 
-    console.log(`[${SERVICE_NAME}] calling ${target} via proxy -> GET ${url} (with Bearer token attached)`);
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    console.log(`[${SERVICE_NAME}] received response from ${target} (status ${response.status})`);
-    res.status(response.status).json({ from: SERVICE_NAME, target, data });
+  const body = payload ? { filler: payload } : undefined;
+
+  try {
+    const { status, data } = await callThroughProxy(url, { headers: extraHeaders, body });
+    console.log(`[${SERVICE_NAME}] received response from ${target} (status ${status})`);
+    res.status(status).json({ from: SERVICE_NAME, target, data });
   } catch (err) {
     console.error(`[${SERVICE_NAME}] call to ${target} failed: ${err.message}`);
     res.status(502).json({ error: `failed to reach ${target}`, details: err.message });
