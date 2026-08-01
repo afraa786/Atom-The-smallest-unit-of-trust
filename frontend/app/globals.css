@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* The Header is position:fixed and doesn't occupy layout space, so any
+   anchor-link jump (#how-it-works, #cta, etc.) or scroll restoration
+   would otherwise land content directly under it. This applies to every
+   element with an id, covering current and future anchor targets. */
+html {
+  scroll-behavior: smooth;
+}
+[id] {
+  scroll-margin-top: 7rem;
+}
+
 :root {
   --cool-white: #d7e8fa;
   --charcoal: #201a12;

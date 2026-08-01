@@ -72,7 +72,7 @@ export function Component() {
   return (
     <div
       id="top"
-      className="relative min-h-screen w-full overflow-hidden font-sans text-cool-white"
+      className="relative w-full overflow-hidden font-sans text-cool-white"
     >
       {/* Background image */}
       <div className="absolute inset-0 -z-20">
@@ -159,7 +159,7 @@ export function Component() {
       <div className="floating-element" style={{ top: "40%", left: "10%", animationDelay: "6s" }} />
       <div className="floating-element" style={{ top: "75%", left: "90%", animationDelay: "6.5s" }} />
 
-      <div className="relative z-10 flex min-h-screen w-full items-center px-4 pb-20 pt-4 md:px-6 md:pb-24 md:pt-6">
+      <div className="relative z-10 flex w-full items-center px-3 pb-2 pt-28 sm:px-0 md:pb-3 md:pt-32">
         <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
           {/* Left column: text content */}
           <div className="text-left">
@@ -234,7 +234,7 @@ export function Component() {
               style={{ background: "rgba(110,173,188,0.25)" }}
             />
             <Image
-              src="/3d-asset.png"
+              src="/3d.png"
               alt="Zero-trust security shield, lock, and identity card"
               width={680}
               height={680}

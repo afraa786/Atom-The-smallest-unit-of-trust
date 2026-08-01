@@ -1,7 +1,9 @@
 import { Header } from "@/components/Header";
 import { Component as HeroSection } from "@/components/ui/hero-section";
+import LiveMetricsChart from "@/components/LiveMetricsChart";
 import StatsStrip from "@/components/StatsStrip";
 import HowItWorks from "@/components/HowItWorks";
+import WhatYoureLookingAt from "@/components/WhatYoureLookingAt";
 //import Features from "@/components/Features";
 // import DashboardPreview from "@/components/DashboardPreview";
 // import WhyAI from "@/components/WhyAI";
@@ -13,7 +15,9 @@ export default function Home() {
       <Header />
       <main className="flex flex-1 flex-col">
         <HeroSection />
+        <LiveMetricsChart />
         <HowItWorks />
+        <WhatYoureLookingAt />
         <StatsStrip />
         {/* <Features /> */}
         {/* <DashboardPreview /> */}

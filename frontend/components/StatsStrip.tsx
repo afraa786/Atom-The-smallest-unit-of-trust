@@ -29,7 +29,7 @@ const STATS = [
 export default function StatsStrip() {
   return (
     <section className="relative bg-black py-20">
-      <div className="mx-auto max-w-7xl px-1">
+      <div className="mx-auto max-w-7xl px-3 sm:px-0">
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
