@@ -1,6 +1,9 @@
+// hero-section.tsx
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Image from "next/image";
+import heroBackground from "@/assets/hero_section_bg.jpg";
 
 // atom brand palette — mapped from the original component's greyscale
 // ramp onto our cool-white / lime-green / ocean-blue system.
@@ -94,9 +97,23 @@ export function Component() {
   return (
     <div
       id="top"
-      className="relative min-h-screen w-full overflow-hidden bg-black font-sans text-cool-white"
+      className="relative min-h-screen w-full overflow-hidden font-sans text-cool-white"
     >
-      <svg className="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg">
+      {/* Background image */}
+      <div className="absolute inset-0 -z-20">
+        <Image
+          src={heroBackground}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-black/35" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(110,173,188,0.16),transparent_36%),linear-gradient(180deg,rgba(0,0,0,0.34)_0%,rgba(0,0,0,0.42)_48%,#000_100%)]" />
+      </div>
+
+      <svg className="absolute inset-0 -z-10 h-full w-full" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
             <path
@@ -167,65 +184,26 @@ export function Component() {
       <div className="floating-element" style={{ top: "40%", left: "10%", animationDelay: "6s" }} />
       <div className="floating-element" style={{ top: "75%", left: "90%", animationDelay: "6.5s" }} />
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-between px-1 py-28 md:px-2 md:py-32">
-        {/* Top tagline */}
-        <div className="text-center">
-          <h2
-            className="text-xs font-sans font-light uppercase tracking-[0.2em] opacity-80 md:text-sm"
-            style={{ color: colors.limeGreen }}
-          >
-            <span className="word" data-delay="0">Welcome</span>
-            <span className="word" data-delay="200">to</span>
-            <span className="word" data-delay="400"><b>atom</b></span>
-            <span className="word" data-delay="600">—</span>
-            <span className="word" data-delay="800">the</span>
-            <span className="word" data-delay="1000">atomic</span>
-            <span className="word" data-delay="1200">core</span>
-            <span className="word" data-delay="1400">of intelligent security.</span>
-          </h2>
-          <div
-            className="mx-auto mt-4 h-px w-16 opacity-30"
-            style={{
-              background: `linear-gradient(to right, transparent, ${colors.limeGreen}, transparent)`,
-            }}
-          />
-        </div>
-
+      <div className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center px-4 py-28 md:px-6 md:py-32">
         {/* Main headline */}
-        <div className="relative mx-auto max-w-5xl text-center">
+        <div className="relative mx-auto max-w-4xl text-center">
           <h1
-            className="text-3xl font-extralight leading-tight tracking-tight md:text-5xl lg:text-6xl"
+            className="text-4xl font-extralight leading-tight tracking-tight md:text-6xl lg:text-7xl"
             style={{ color: colors.coolWhite }}
           >
-            <div className="mb-4 md:mb-6">
-              <span className="word" data-delay="1600">Autonomous</span>
-              <span className="word" data-delay="1750">defense,</span>
-              <span className="word" data-delay="1900">powered</span>
-              <span className="word" data-delay="2050">by</span>
-              <span className="word" data-delay="2200">AI-driven</span>
-              <span className="word" data-delay="2350">agents.</span>
-            </div>
-            <div
-              className="text-2xl font-thin leading-relaxed md:text-3xl lg:text-4xl"
-              style={{ color: colors.limeGreen }}
-            >
-              <span className="word" data-delay="2600">Ingest,</span>
-              <span className="word" data-delay="2750">detect,</span>
-              <span className="word" data-delay="2900">analyze,</span>
-              <span className="word" data-delay="3050">and</span>
-              <span className="word" data-delay="3200">respond</span>
-              <span className="word" data-delay="3350">— all</span>
-              <span className="word" data-delay="3500">in</span>
-              <span className="word" data-delay="3650">real</span>
-              <span className="word" data-delay="3800">time.</span>
-            </div>
+            <span className="word" data-delay="200">Stop</span>{" "}
+            <span className="word" data-delay="350">Attackers</span>{" "}
+            <span className="word" data-delay="500">at</span>{" "}
+            <span className="word" data-delay="650">the</span>{" "}
+            <span className="word" data-delay="800">First</span>{" "}
+            <span className="word" data-delay="950">Request.</span>
           </h1>
           <div
             className="absolute -left-8 top-1/2 h-px w-4 opacity-20"
             style={{
               background: colors.oceanBlue,
               animation: "word-appear 1s ease-out forwards",
-              animationDelay: "3.5s",
+              animationDelay: "1.2s",
             }}
           />
           <div
@@ -233,15 +211,29 @@ export function Component() {
             style={{
               background: colors.oceanBlue,
               animation: "word-appear 1s ease-out forwards",
-              animationDelay: "3.7s",
+              animationDelay: "1.3s",
             }}
           />
         </div>
 
+        {/* Subhead */}
+        <p
+          className="mx-auto mt-6 max-w-2xl text-center text-base font-light leading-relaxed opacity-0 md:text-lg"
+          style={{
+            color: colors.coolWhiteDim,
+            animation: "word-appear 1s ease-out forwards",
+            animationDelay: "1.5s",
+          }}
+        >
+          The future of communication. Atom is a real-time Zero-Trust
+          platform that secures decentralized APIs with authentication,
+          policy enforcement, and continuous verification.
+        </p>
+
         {/* CTAs */}
         <div
-          className="flex flex-wrap items-center justify-center gap-4 opacity-0"
-          style={{ animation: "word-appear 1s ease-out forwards", animationDelay: "4.2s" }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-4 opacity-0"
+          style={{ animation: "word-appear 1s ease-out forwards", animationDelay: "1.9s" }}
         >
           <a
             href="#cta"
@@ -255,35 +247,6 @@ export function Component() {
           >
             See How It Works
           </a>
-        </div>
-
-        {/* Bottom tagline */}
-        <div className="text-center">
-          <div
-            className="mx-auto mb-4 h-px w-16 opacity-30"
-            style={{
-              background: `linear-gradient(to right, transparent, ${colors.limeGreen}, transparent)`,
-            }}
-          />
-          <h2
-            className="text-xs font-sans font-light uppercase tracking-[0.2em] opacity-80 md:text-sm"
-            style={{ color: colors.limeGreen }}
-          >
-            <span className="word" data-delay="4400">Real-time</span>
-            <span className="word" data-delay="4550">detection,</span>
-            <span className="word" data-delay="4700">automated</span>
-            <span className="word" data-delay="4850">response,</span>
-            <span className="word" data-delay="5000">zero-day</span>
-            <span className="word" data-delay="5150">awareness.</span>
-          </h2>
-          <div
-            className="mt-6 flex justify-center space-x-4 opacity-0"
-            style={{ animation: "word-appear 1s ease-out forwards", animationDelay: "4.5s" }}
-          >
-            <div className="h-1 w-1 rounded-full opacity-40" style={{ background: colors.limeGreen }} />
-            <div className="h-1 w-1 rounded-full opacity-60" style={{ background: colors.limeGreen }} />
-            <div className="h-1 w-1 rounded-full opacity-40" style={{ background: colors.limeGreen }} />
-          </div>
         </div>
       </div>
 
