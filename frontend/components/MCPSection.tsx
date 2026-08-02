@@ -160,7 +160,7 @@ export default function MCPSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.25 }}
-          className="mt-16 grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14"
+          className="mt-20 grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16"
         >
           {/* Left: heading + subtext */}
           <div>
@@ -168,24 +168,24 @@ export default function MCPSection() {
               <Package className="size-3" />
               Live image
             </span>
-            <h3 className="mt-4 text-3xl font-bold tracking-tight text-cool-white sm:text-4xl">
+            <h3 className="mt-5 text-4xl font-bold tracking-tight text-cool-white sm:text-5xl">
               Published on <span className="text-ocean-blue">Docker Hub</span>
             </h3>
-            <p className="mt-4 text-base leading-relaxed text-cool-white/65">
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-cool-white/65">
               The zero-trust-proxy image this entire mesh runs on isn&apos;t a
               local-only build — it&apos;s published and pullable right now.
               Multi-stage build, non-root user, a real{" "}
-              <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm">
+              <code className="rounded bg-white/10 px-1.5 py-0.5 text-base">
                 HEALTHCHECK
               </code>{" "}
-              against <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm">/health</code>,
+              against <code className="rounded bg-white/10 px-1.5 py-0.5 text-base">/health</code>,
               and no secrets baked into the image.
             </p>
             <a
               href={DOCKER_HUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="glow-lime mt-6 inline-flex items-center gap-2 rounded-full border border-cool-white/20 px-6 py-3 text-sm font-bold text-cool-white transition-transform hover:-translate-y-0.5"
+              className="glow-lime mt-8 inline-flex items-center gap-2 rounded-full border border-cool-white/20 px-8 py-3.5 text-base font-bold text-cool-white transition-transform hover:-translate-y-0.5"
             >
               View on Docker Hub
               <ExternalLink className="size-4" />
