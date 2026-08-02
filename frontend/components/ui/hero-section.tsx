@@ -229,14 +229,12 @@ export function Component() {
           >
             <div className="absolute -inset-8 rounded-full bg-ocean-blue/20 blur-3xl" />
             <div className="glass-panel relative overflow-hidden rounded-[28px] p-2">
-              <video
-                src="/assets/hero_video.mp4"
-                className="aspect-video w-full rounded-[22px] object-cover"
-                autoPlay
-                controls
-                loop
-                playsInline
-                preload="metadata"
+              <iframe
+                src="https://drive.google.com/file/d/1F9e13XNsL5HQfS5H_G3JvvQii0bE0X24/preview"
+                className="aspect-video w-full rounded-[22px] border-0"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+                title="Atom Hero Video"
               />
             </div>
           </div>
