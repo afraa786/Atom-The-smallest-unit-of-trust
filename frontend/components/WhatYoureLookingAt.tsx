@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
+import SystemArchitectureDiagram from "@/components/SystemArchitectureDiagram";
 
 const SECTIONS = [
   {
@@ -53,29 +53,20 @@ export default function WhatYoureLookingAt() {
         >
 
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_35%,rgba(110,173,188,0.16),transparent_34%)]" />
-          <div className="relative grid items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-ocean-blue">
-                System Architecture
-              </p>
-              <h3 className="mt-3 text-3xl font-black uppercase tracking-tight text-cool-white sm:text-4xl">
-                Zero-trust request path
-              </h3>
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-cool-white/70">
-                The architecture diagram now lives with the documentation so it
-                can support the explanation below without competing with the
-                first-viewport hero.
-              </p>
-            </div>
-            <div className="relative mx-auto flex w-full max-w-xl items-center justify-center">
-              <div className="absolute h-80 w-80 rounded-full bg-ocean-blue/20 blur-3xl md:h-[30rem] md:w-[30rem]" />
-              <Image
-                src="/3d.png"
-                alt="Zero-trust system architecture diagram"
-                width={680}
-                height={680}
-                className="relative w-full max-w-md drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)] lg:max-w-lg"
-              />
+          <div className="relative">
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-ocean-blue">
+              System Architecture
+            </p>
+            <h3 className="mt-3 text-3xl font-black uppercase tracking-tight text-cool-white sm:text-4xl">
+              Zero-trust request path
+            </h3>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-cool-white/70">
+              The architecture diagram now lives with the documentation so it
+              can support the explanation below without competing with the
+              first-viewport hero.
+            </p>
+            <div className="mt-8">
+              <SystemArchitectureDiagram />
             </div>
           </div>
         </motion.div>
