@@ -41,9 +41,42 @@ PROXY_PID=$!
 
 # Forward termination signals to every child so `docker stop` / Render's
 # shutdown actually stops all 5 processes, not just the shell.
-trap 'kill $USER_PID $PAYMENT_PID $DB_PID $NOTIFICATION_PID $PROXY_PID 2>/dev/null' TERM INT
+trap 'kill $USER_PID $PAYMENT_PID $DB_PID $NOTIFICATION_PID $PROXY_PID 2>/dev/null; exit 0' TERM INT
 
-# If any one process dies, exit the container instead of limping along
-# with a partial mesh — `wait -n` exits as soon as any single job ends.
-wait -n $USER_PID $PAYMENT_PID $DB_PID $NOTIFICATION_PID $PROXY_PID
-exit $?
+# The proxy is the only process Render's health check and public traffic
+# actually depend on — if one of the 4 dummy services dies (e.g. OOM on
+# a memory-constrained free tier), that shouldn't take the whole
+# container down and disconnect the proxy along with it. Only exit when
+# the PROXY itself dies; a dead dummy service just gets logged, since a
+# request to it will fail naturally (502 from the proxy) rather than
+# silently hanging.
+USER_WARNED=0
+PAYMENT_WARNED=0
+DB_WARNED=0
+NOTIFICATION_WARNED=0
+
+while true; do
+  if ! kill -0 "$PROXY_PID" 2>/dev/null; then
+    echo "proxy process (pid $PROXY_PID) died — exiting container"
+    exit 1
+  fi
+
+  if [ "$USER_WARNED" = "0" ] && ! kill -0 "$USER_PID" 2>/dev/null; then
+    echo "WARNING: user-service (pid $USER_PID) is no longer running — requests to it will fail until the container restarts"
+    USER_WARNED=1
+  fi
+  if [ "$PAYMENT_WARNED" = "0" ] && ! kill -0 "$PAYMENT_PID" 2>/dev/null; then
+    echo "WARNING: payment-service (pid $PAYMENT_PID) is no longer running — requests to it will fail until the container restarts"
+    PAYMENT_WARNED=1
+  fi
+  if [ "$DB_WARNED" = "0" ] && ! kill -0 "$DB_PID" 2>/dev/null; then
+    echo "WARNING: db-service (pid $DB_PID) is no longer running — requests to it will fail until the container restarts"
+    DB_WARNED=1
+  fi
+  if [ "$NOTIFICATION_WARNED" = "0" ] && ! kill -0 "$NOTIFICATION_PID" 2>/dev/null; then
+    echo "WARNING: notification-service (pid $NOTIFICATION_PID) is no longer running — requests to it will fail until the container restarts"
+    NOTIFICATION_WARNED=1
+  fi
+
+  sleep 5
+done
