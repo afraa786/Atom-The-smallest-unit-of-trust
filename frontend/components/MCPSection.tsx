@@ -1,7 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Container, ExternalLink, Package } from "lucide-react";
 import MCPBeamDiagram from "@/components/MCPBeamDiagram";
+
+const DOCKER_HUB_URL = "https://hub.docker.com/r/afraa054/zero-trust-proxy";
 
 const DOC_BLOCKS = [
   {
@@ -149,6 +152,114 @@ export default function MCPSection() {
         >
           <CodePanel title="Claude Desktop config (claude_desktop_config.json)" code={CONFIG_SNIPPET} />
           <CodePanel title="Tool call examples" code={TOOL_SNIPPET} />
+        </motion.div>
+
+        {/* Docker Hub — live product callout, same layout language as the rest of the section */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mt-16 grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14"
+        >
+          {/* Left: heading + subtext */}
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-ocean-blue/30 bg-ocean-blue/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-ocean-blue">
+              <Package className="size-3" />
+              Live image
+            </span>
+            <h3 className="mt-4 text-3xl font-bold tracking-tight text-cool-white sm:text-4xl">
+              Published on <span className="text-ocean-blue">Docker Hub</span>
+            </h3>
+            <p className="mt-4 text-base leading-relaxed text-cool-white/65">
+              The zero-trust-proxy image this entire mesh runs on isn&apos;t a
+              local-only build — it&apos;s published and pullable right now.
+              Multi-stage build, non-root user, a real{" "}
+              <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm">
+                HEALTHCHECK
+              </code>{" "}
+              against <code className="rounded bg-white/10 px-1.5 py-0.5 text-sm">/health</code>,
+              and no secrets baked into the image.
+            </p>
+            <a
+              href={DOCKER_HUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glow-lime mt-6 inline-flex items-center gap-2 rounded-full border border-cool-white/20 px-6 py-3 text-sm font-bold text-cool-white transition-transform hover:-translate-y-0.5"
+            >
+              View on Docker Hub
+              <ExternalLink className="size-4" />
+            </a>
+          </div>
+
+          {/* Right: browser-chrome mockup framing the Docker Hub page */}
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b0b0b] shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+            <div className="flex items-center gap-3 border-b border-white/10 bg-white/[0.03] px-4 py-3">
+              <div className="flex gap-1.5">
+                <span className="size-2.5 rounded-full bg-red-500/70" />
+                <span className="size-2.5 rounded-full bg-yellow-500/70" />
+                <span className="size-2.5 rounded-full bg-green-500/70" />
+              </div>
+              <div className="flex flex-1 items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5">
+                <Container className="size-3.5 shrink-0 text-cool-white/40" />
+                <span className="truncate font-mono text-xs text-cool-white/60">
+                  hub.docker.com/r/afraa054/zero-trust-proxy
+                </span>
+              </div>
+              <a
+                href={DOCKER_HUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex shrink-0 items-center gap-1.5 rounded-lg bg-ocean-blue px-3 py-1.5 text-xs font-bold text-black transition-opacity hover:opacity-90"
+              >
+                Open
+                <ExternalLink className="size-3" />
+              </a>
+            </div>
+
+            <div className="flex flex-col gap-5 bg-gradient-to-b from-[#0b0b0b] to-black p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
+                  <Container className="size-5 text-ocean-blue" />
+                </div>
+                <div>
+                  <p className="font-mono text-sm font-bold text-cool-white">
+                    afraa054/zero-trust-proxy
+                  </p>
+                  <p className="text-xs text-cool-white/50">Public · Updated recently</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Tag", value: "latest" },
+                  { label: "Base", value: "node:20-alpine" },
+                  { label: "Healthcheck", value: "/health" },
+                ].map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3"
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-cool-white/40">
+                      {stat.label}
+                    </p>
+                    <p className="mt-1 truncate font-mono text-xs text-cool-white/80">
+                      {stat.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-xl border border-white/10 bg-black/50 px-4 py-3">
+                <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-cool-white/40">
+                  Pull
+                </p>
+                <code className="block font-mono text-xs text-lime-green">
+                  docker pull afraa054/zero-trust-proxy:latest
+                </code>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
