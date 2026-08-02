@@ -98,15 +98,29 @@ export default function MCPSection() {
           </p>
         </motion.div>
 
-        {/* Animated beam diagram */}
+        {/* Animated beam diagram & Claude MCP Video side-by-side */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-14"
+          className="mb-14 grid grid-cols-1 gap-8 items-center lg:grid-cols-2"
         >
-          <MCPBeamDiagram />
+          <div className="w-full">
+            <MCPBeamDiagram />
+          </div>
+          <div className="relative w-full">
+            <div className="absolute -inset-4 rounded-full bg-ocean-blue/15 blur-2xl" />
+            <div className="glass-panel relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.04] p-2 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+              <iframe
+                src="https://drive.google.com/file/d/1Zr0BoPTKQ-CcSebywH4BfepvjkH2edG6/preview"
+                className="aspect-video w-full rounded-[22px] border-0"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+                title="Claude MCP Integration Video"
+              />
+            </div>
+          </div>
         </motion.div>
 
         {/* Doc blocks grid */}
